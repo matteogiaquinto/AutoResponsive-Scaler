@@ -1,70 +1,30 @@
 # AutoResponsive-Scaler
 
-Make your website responsive with one script instead of redesigning every breakpoint.
+Make fixed, art-directed layouts scale fluidly without recreating every intermediate breakpoint.
 
-Best for art-directed, desktop-first websites where you want to preserve one precise layout and scale it between screen sizes.
+Best for desktop-first pages that preserve a precise composition. Version 0.2 can also switch to a separately designed mobile composition, then scale that layout below its breakpoint.
 
-Instead of writing many responsive breakpoints, you can design a precise layout at a fixed width, usually `1920px`, wrap the page in one container, and let this script scale the layout down to fit the viewport.
-
-> Status: `0.1.0` experimental. The approach works well for visual, desktop-first websites, but it is not a replacement for every responsive layout.
-
-## Why
-
-Some websites are designed like fixed compositions: landing pages, portfolios, event pages, art-directed pages, one-off campaign sites, or prototypes.
-
-For those projects, this helper lets you:
-
-- build the desktop layout once at a known width;
-- scale it smoothly between viewport sizes;
-- keep fixed headers aligned with the scaled page;
-- fix the document height after `transform: scale(...)`, so scrolling remains normal.
-
-## Demo
-
-Open the local demo:
-
-```txt
-examples/basic/index.html
-```
+> Status: `0.2.0` experimental. This is an intentional shortcut, not a universal responsive-design replacement.
 
 ## Quick Start
 
-### Option A: Install With An AI Agent
-
-Copy-paste the raw AI install prompt into Codex, Cursor, Claude Code, or another coding agent:
-
-[Copy raw AI install prompt](https://raw.githubusercontent.com/Saveyh/AutoResponsive-Scaler/main/docs/ai-install-prompt.md)
-
-You can also read the prompt in the docs:
-
-[docs/ai-install-prompt.md](docs/ai-install-prompt.md)
-
-### Option B: Install Manually
-
-Load the stable CDN version in the `<head>`:
+Load the stable release in the `<head>`:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.1.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
   data-design-width="1920"
 ></script>
 ```
 
-Wrap your page content:
+Wrap the page content and build it at the design width:
 
 ```html
 <body>
-  <header data-scale-fixed>
-    ...
-  </header>
-
-  <div class="container">
-    ...
-  </div>
+  <header data-scale-fixed>...</header>
+  <div class="container">...</div>
 </body>
 ```
-
-Build your layout at the design width:
 
 ```css
 .container {
@@ -72,71 +32,74 @@ Build your layout at the design width:
 }
 ```
 
-The script handles the scale, the horizontal overflow, and the corrected page height.
+The script applies the scale, prevents horizontal overflow, and corrects the document height after the transform.
 
-## CDN Usage
+For an AI-assisted installation, use [the installation context](docs/ai-install-prompt.md). For development against the latest source, replace `@0.2.0` with `@main`.
 
-You can load the script directly from jsDelivr.
+## Desktop And Mobile Layouts
 
-Stable version:
-
-```html
-<script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.1.0/responsive-scale.js"
-  data-design-width="1920"
-></script>
-```
-
-Latest `main` branch:
+Enable a mobile composition by adding a second design width. The desktop layout scales from `1920px` down to `500px`; at `500px` and below, the mobile layout is active and scales from its own `500px` design width.
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@main/responsive-scale.js"
+  src="./responsive-scale.js"
   data-design-width="1920"
+  data-mobile-design-width="500"
+  data-mobile-breakpoint="500"
 ></script>
 ```
 
-Use a tagged version like `@0.1.0` for production sites.
+Keep the same HTML and recompose it in CSS:
 
-Replace `Saveyh` if you fork the repository under another GitHub account.
+```css
+.container {
+  width: 1920px;
+}
+
+@media (max-width: 500px) {
+  .container {
+    width: 500px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+When mobile scaling is enabled, define both layout widths in CSS. The script uses the active layout width to calculate the scale and exposes the active mode on `<html>` as `data-responsive-scale-layout="desktop"` or `"mobile"`.
+
+If the compositions need separate wrappers, use one for each mode. The script shows the active wrapper and hides the other:
+
+```html
+<main data-scale-container="desktop" class="desktop-layout">...</main>
+<main data-scale-container="mobile" class="mobile-layout">...</main>
+```
+
+Give each wrapper its fixed design width in CSS. Alternatively, select the mobile wrapper explicitly with `data-mobile-container=".mobile-layout"`.
 
 ## Fixed Elements
 
-If you have a fixed header, floating nav, or another fixed element outside `.container`, mark it with `data-scale-fixed`:
+Mark a fixed header, floating navigation, or other element outside the page wrapper with `data-scale-fixed`:
 
 ```html
-<header data-scale-fixed>
-  ...
-</header>
+<header data-scale-fixed>...</header>
 ```
 
-The element will receive the same scale as the main container.
-
-## Custom Container
-
-By default, the script looks for:
-
-```css
-.container
-```
-
-You can also mark the scalable element directly:
-
-```html
-<main data-scale-container>
-  ...
-</main>
-```
+It receives the same active scale as the main layout.
 
 ## Options
 
-Add options directly on the script tag:
+Add options to the script tag:
 
 ```html
 <script
   src="./responsive-scale.js"
   data-design-width="1440"
+  data-mobile-design-width="500"
+  data-mobile-breakpoint="500"
   data-container=".page"
+  data-mobile-container=".page-mobile"
   data-fixed=".site-header"
   data-max-scale="1"
   data-min-scale="0"
@@ -145,36 +108,34 @@ Add options directly on the script tag:
 
 | Attribute | Default | Description |
 | --- | --- | --- |
-| `data-design-width` | `1920` | Width used to design the layout. |
-| `data-container` | `.container` | Selector for the scalable page wrapper. |
+| `data-design-width` | `1920` | Width used to design the desktop layout. |
+| `data-mobile-design-width` | disabled | Width used to design the mobile layout. Enables mobile mode when greater than `0`. |
+| `data-mobile-breakpoint` | `500` | Viewport width at or below which mobile mode is active. |
+| `data-container` | `.container` | Selector for the desktop or shared scalable wrapper. |
+| `data-mobile-container` | none | Selector for a separate mobile wrapper. |
 | `data-fixed` | `[data-scale-fixed], .scale-fixed` | Selector for fixed elements that should scale too. |
-| `data-max-scale` | `1` | Prevents the layout from scaling larger than its design size. |
-| `data-min-scale` | `0` | Optional minimum scale. Keep `0` if you want it to always fit the viewport. |
+| `data-max-scale` | `1` | Prevents a layout from scaling larger than its design size. |
+| `data-min-scale` | `0` | Optional minimum scale. Keep `0` if the layout should always fit. |
 | `data-auto-height` | `true` | Updates `body` height after scaling. |
 | `data-body-setup` | `true` | Applies basic body styles needed for centered scaling. |
 | `data-auto` | `true` | Set to `false` for manual initialization. |
 
 ## Manual Initialization
 
-If you do not want automatic initialization:
-
 ```html
 <script src="./responsive-scale.js" data-auto="false"></script>
-```
-
-Then initialize it yourself:
-
-```html
 <script>
   ResponsiveScaleLayout.init({
     designWidth: 1920,
+    mobileDesignWidth: 500,
+    mobileBreakpoint: 500,
     container: ".container",
-    fixed: "header",
+    fixed: "header"
   });
 </script>
 ```
 
-You can refresh measurements manually after custom layout changes:
+Refresh measurements after custom or asynchronous layout changes:
 
 ```js
 ResponsiveScaleLayout.instance.refresh();
@@ -182,53 +143,27 @@ ResponsiveScaleLayout.instance.refresh();
 
 ## How It Works
 
-The script calculates:
-
 ```txt
-scale = viewport width / design width
+desktop: scale = viewport width / desktop design width
+mobile:  scale = viewport width / mobile design width
 ```
 
-Then it applies:
-
-```css
-transform: scale(var(--responsive-scale));
-transform-origin: top center;
-```
-
-Because CSS transforms do not affect document flow, the script measures the scaled container and sets the correct `body` height.
+The script applies `transform: scale(var(--responsive-scale))` from the top center. Because transforms do not affect document flow, it measures the scaled active wrapper and sets the appropriate `body` height.
 
 ## Limitations
 
-This is an intentional shortcut, not a universal responsive system.
-
+- A mobile layout still needs to be designed in CSS; the script scales it but does not create its visual hierarchy.
 - Text, images, buttons, and hit targets all scale down together.
-- Very small mobile screens may need a separate mobile layout.
 - Browser zoom and accessibility text scaling are not the same as true responsive typography.
-- The script writes `transform` on the scalable container and fixed elements. If those elements already need their own transforms, wrap the content in another element.
+- The script writes `transform` on the scalable wrapper and fixed elements. Wrap an element if it needs its own transform.
 - CSS transforms create stacking contexts, which can affect z-index behavior.
-- Viewport-based components such as modals, side menus, sticky sections, or scroll animations may need manual testing.
+- Viewport-based components such as modals, side menus, sticky sections, or scroll animations need manual testing.
 - If content changes after async loading, call `ResponsiveScaleLayout.instance.refresh()`.
-
-## Browser Support
-
-The script targets modern browsers with support for:
-
-- CSS custom properties;
-- `transform`;
-- `MutationObserver`;
-- `requestAnimationFrame`.
 
 ## Development
 
-Run a basic syntax check:
-
 ```bash
 npm test
-```
-
-Package dry-run:
-
-```bash
 npm pack --dry-run
 ```
 

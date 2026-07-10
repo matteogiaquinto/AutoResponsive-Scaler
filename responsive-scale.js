@@ -1,7 +1,10 @@
 (function (global) {
   const DEFAULTS = {
     designWidth: 1920,
+    mobileDesignWidth: 0,
+    mobileBreakpoint: 500,
     container: ".container",
+    mobileContainer: "",
     fixed: "[data-scale-fixed], .scale-fixed",
     minScale: 0,
     maxScale: 1,
@@ -31,7 +34,16 @@
 
     return {
       designWidth: toNumber(scriptEl.dataset.designWidth, DEFAULTS.designWidth),
+      mobileDesignWidth: toNumber(
+        scriptEl.dataset.mobileDesignWidth,
+        DEFAULTS.mobileDesignWidth
+      ),
+      mobileBreakpoint: toNumber(
+        scriptEl.dataset.mobileBreakpoint,
+        DEFAULTS.mobileBreakpoint
+      ),
       container: scriptEl.dataset.container || DEFAULTS.container,
+      mobileContainer: scriptEl.dataset.mobileContainer || DEFAULTS.mobileContainer,
       fixed: scriptEl.dataset.fixed || DEFAULTS.fixed,
       minScale: toNumber(scriptEl.dataset.minScale, DEFAULTS.minScale),
       maxScale: toNumber(scriptEl.dataset.maxScale, DEFAULTS.maxScale),
@@ -40,38 +52,66 @@
     };
   }
 
-  function setEarlyScale(options) {
-    const scale = clamp(
-      global.innerWidth / options.designWidth,
+  function isMobileLayout(options) {
+    return (
+      options.mobileDesignWidth > 0 &&
+      global.innerWidth <= options.mobileBreakpoint
+    );
+  }
+
+  function getLayoutMode(options) {
+    return isMobileLayout(options) ? "mobile" : "desktop";
+  }
+
+  function getDesignWidth(options) {
+    return getLayoutMode(options) === "mobile"
+      ? options.mobileDesignWidth
+      : options.designWidth;
+  }
+
+  function getScale(options) {
+    return clamp(
+      global.innerWidth / getDesignWidth(options),
       options.minScale,
       options.maxScale
     );
+  }
 
-    document.documentElement.style.setProperty(
-      DEFAULTS.scaleVar,
-      scale.toFixed(4)
-    );
+  function setEarlyScale(options) {
+    const root = document.documentElement;
+    const layout = getLayoutMode(options);
+
+    root.style.setProperty(DEFAULTS.scaleVar, getScale(options).toFixed(4));
+    root.dataset.responsiveScaleLayout = layout;
   }
 
   function init(userOptions) {
     const options = Object.assign({}, DEFAULTS, optionsFromScript(), userOptions);
     const root = document.documentElement;
     const body = document.body;
-    const container =
-      document.querySelector("[data-scale-container]") ||
+    const desktopContainer =
+      document.querySelector('[data-scale-container="desktop"]') ||
+      document.querySelector('[data-scale-container]:not([data-scale-container="mobile"])') ||
       document.querySelector(options.container);
+    const mobileContainer = options.mobileContainer
+      ? document.querySelector(options.mobileContainer)
+      : document.querySelector('[data-scale-container="mobile"]');
 
-    if (!root || !body || !container) return null;
+    if (!root || !body || !desktopContainer) return null;
 
     const fixedElements = Array.from(document.querySelectorAll(options.fixed));
+    const containers = [desktopContainer];
+    let activeContainer = null;
     let resizeTimer = null;
 
-    function getScale() {
-      return clamp(
-        global.innerWidth / options.designWidth,
-        options.minScale,
-        options.maxScale
-      );
+    if (mobileContainer && mobileContainer !== desktopContainer) {
+      containers.push(mobileContainer);
+    }
+
+    function getActiveContainer() {
+      return getLayoutMode(options) === "mobile" && mobileContainer
+        ? mobileContainer
+        : desktopContainer;
     }
 
     function applyBaseStyles() {
@@ -92,12 +132,14 @@
         }
       }
 
-      if (!container.style.width) {
-        container.style.width = options.designWidth + "px";
-      }
+      containers.forEach(function (container) {
+        if (!container.style.width && options.mobileDesignWidth <= 0) {
+          container.style.width = options.designWidth + "px";
+        }
 
-      container.style.transformOrigin = "top center";
-      container.style.transform = "scale(var(" + options.scaleVar + ", 1))";
+        container.style.transformOrigin = "top center";
+        container.style.transform = "scale(var(" + options.scaleVar + ", 1))";
+      });
 
       fixedElements.forEach(function (element) {
         element.style.transformOrigin = "top center";
@@ -106,15 +148,30 @@
     }
 
     function applyScale() {
-      root.style.setProperty(options.scaleVar, getScale().toFixed(4));
+      const layout = getLayoutMode(options);
+      const designWidth = getDesignWidth(options);
+
+      root.style.setProperty(options.scaleVar, getScale(options).toFixed(4));
+      root.style.setProperty("--responsive-layout-width", designWidth + "px");
+      root.dataset.responsiveScaleLayout = layout;
+    }
+
+    function updateContainers() {
+      activeContainer = getActiveContainer();
+
+      containers.forEach(function (container) {
+        const isActive = container === activeContainer;
+        container.hidden = !isActive;
+      });
     }
 
     function applyHeight() {
       applyScale();
+      updateContainers();
 
-      if (!options.autoHeight) return;
+      if (!options.autoHeight || !activeContainer) return;
 
-      const rect = container.getBoundingClientRect();
+      const rect = activeContainer.getBoundingClientRect();
       const documentBottom = Math.ceil(rect.bottom + global.scrollY);
       const newHeight = documentBottom + "px";
 
@@ -146,11 +203,13 @@
       requestAnimationFrame(applyHeight);
     });
 
-    mutationObserver.observe(container, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true,
+    containers.forEach(function (container) {
+      mutationObserver.observe(container, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        characterData: true,
+      });
     });
 
     return {

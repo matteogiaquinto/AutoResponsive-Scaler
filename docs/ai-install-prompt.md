@@ -2,7 +2,7 @@
 
 Use this context when asking an AI coding agent to install AutoResponsive-Scaler into an existing website.
 
-AutoResponsive-Scaler makes fixed-width web layouts responsive by scaling the layout with CSS transforms. It is useful for art-directed websites where the designer wants to preserve one precise desktop composition instead of rebuilding every breakpoint.
+AutoResponsive-Scaler makes fixed-width web layouts responsive by scaling the layout with CSS transforms. It is useful for art-directed websites where the designer wants to preserve a precise desktop composition, with an optional separately designed mobile composition below a chosen breakpoint.
 
 ## Instructions For AI Agents
 
@@ -16,7 +16,7 @@ Follow these rules strictly:
 4. **Do not remove existing responsive CSS unless the user explicitly asks you to.**
 5. **Do not rename or remove AutoResponsive-Scaler `data-` attributes.**
 6. **Use a tagged CDN version for production unless the user asks for `@main`.**
-7. **If the site already has a complex mobile layout, preserve it and explain any limitations before changing it.**
+7. **If the site already has a complex mobile layout, preserve it and use it as the mobile composition when appropriate.**
 8. **If an element already uses `transform`, do not overwrite it blindly. Wrap the scalable content in another element or choose a safer target.**
 9. **After implementation, verify there is no horizontal overflow and that the page scroll height matches the scaled content.**
 
@@ -38,7 +38,7 @@ Use the stable jsDelivr CDN version:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.1.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
   data-design-width="1920"
 ></script>
 ```
@@ -51,6 +51,8 @@ Use `@main` only for testing the latest development version:
   data-design-width="1920"
 ></script>
 ```
+
+Mobile-layout support is available from `0.2.0`. Use `@main` only to test unreleased development changes.
 
 ## Core Markup Pattern
 
@@ -105,6 +107,30 @@ The script handles:
 
 Do not duplicate those transform rules unless there is a project-specific reason.
 
+## Mobile Layout Pattern
+
+Use the same HTML and recompose it in CSS below the breakpoint. Both layout widths must be fixed:
+
+```html
+<script
+  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
+  data-design-width="1920"
+  data-mobile-design-width="500"
+  data-mobile-breakpoint="500"
+></script>
+```
+
+```css
+.container { width: 1920px; }
+
+@media (max-width: 500px) {
+  .container { width: 500px; }
+  /* Reorganize the same HTML for the mobile composition here. */
+}
+```
+
+If the project needs distinct wrappers, use `data-scale-container="desktop"` and `data-scale-container="mobile"`. The script displays the active wrapper and hides the inactive one.
+
 ## Options
 
 The most common option is `data-design-width`.
@@ -113,7 +139,7 @@ Use the width the site was designed for:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.1.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
   data-design-width="1440"
 ></script>
 ```
@@ -122,9 +148,12 @@ Available script attributes:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.1.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
   data-design-width="1920"
+  data-mobile-design-width="500"
+  data-mobile-breakpoint="500"
   data-container=".container"
+  data-mobile-container=".mobile-container"
   data-fixed="[data-scale-fixed], .scale-fixed"
   data-max-scale="1"
   data-min-scale="0"
@@ -138,6 +167,9 @@ Important public attributes:
 - `data-scale-container`: marks the scalable wrapper directly.
 - `data-scale-fixed`: marks fixed elements that should scale with the layout.
 - `data-design-width`: the width used to design the fixed layout.
+- `data-mobile-design-width`: enables a separately designed mobile layout when set to a value greater than `0`.
+- `data-mobile-breakpoint`: width at or below which the mobile layout is active.
+- `data-mobile-container`: selector for an optional separate mobile wrapper.
 - `data-max-scale`: prevents scaling larger than the design size.
 - `data-min-scale`: optional minimum scale.
 - `data-auto-height`: controls body height correction.
@@ -148,14 +180,15 @@ Important public attributes:
 1. Inspect the project structure.
 2. Identify the main HTML entry file or template.
 3. Identify the fixed design width from CSS, design notes, or the largest layout wrapper. Use `1920` only when no better value is available.
-4. Find or create a single scalable wrapper for the page content.
-5. Ensure the wrapper has the fixed design width in CSS.
-6. Add `data-scale-container` if using a custom wrapper or if `.container` is ambiguous.
-7. Add `data-scale-fixed` to fixed headers, navbars, or floating UI outside the scalable wrapper.
-8. Add the CDN script in the `<head>` so the scale value is available early.
-9. Preserve existing scripts and styles.
-10. Test representative viewport widths.
-11. Report the files changed and the design width used.
+4. Find or create a scalable wrapper for the page content.
+5. If a separate mobile composition is needed, identify its fixed design width and breakpoint, then add `data-mobile-design-width` and mobile CSS for the same markup or a dedicated mobile wrapper.
+6. Ensure every active wrapper has its fixed design width in CSS.
+7. Add `data-scale-container` if using a custom wrapper or if `.container` is ambiguous.
+8. Add `data-scale-fixed` to fixed headers, navbars, or floating UI outside the scalable wrapper.
+9. Add the CDN script in the `<head>` so the scale value is available early.
+10. Preserve existing scripts and styles.
+11. Test representative viewport widths.
+12. Report the files changed and the design widths and breakpoint used.
 
 ## Verification Checklist
 
@@ -165,6 +198,8 @@ Verify at least these widths when possible:
 - `1440px`
 - `1366px`
 - `1024px`
+- `500px` when mobile scaling is enabled
+- a smaller representative mobile width, such as `390px`
 
 Check:
 

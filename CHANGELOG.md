@@ -7,6 +7,13 @@ This project follows a simple versioning approach while it is experimental:
 - `0.x` versions may include breaking changes.
 - `1.0.0` will mean the way people use the script is considered stable.
 
+## 0.2.0 - 2026-07-10
+
+- Added optional mobile layout scaling with a dedicated design width and breakpoint.
+- Added support for shared wrappers with mobile CSS, or separate desktop and mobile wrappers.
+- Added the active layout marker on `<html>` as `data-responsive-scale-layout`.
+- Updated the basic demo and documentation with a two-layout example.
+
 ## 0.1.0 - 2026-06-24
 
 Initial experimental release.

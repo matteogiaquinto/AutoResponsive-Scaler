@@ -1,6 +1,6 @@
 {
   "name": "autoresponsive-scaler",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Make your website responsive with one script instead of redesigning every breakpoint.",
   "main": "responsive-scale.js",
   "browser": "responsive-scale.js",
