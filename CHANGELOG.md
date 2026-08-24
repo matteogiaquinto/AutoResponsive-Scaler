@@ -9,7 +9,7 @@ This project follows a simple versioning approach while it is experimental:
 
 ## 0.2.1 - 2026-08-24
 
-- Updated GitHub ownership and public URLs after the account rename from `Saveyh` to `matteogiaquinto`.
+- Updated GitHub ownership and public URLs after the account rename.
 - Updated jsDelivr examples and package metadata to use the new GitHub username.
 - No runtime behavior changes.
 
