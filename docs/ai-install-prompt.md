@@ -38,7 +38,7 @@ Use the stable jsDelivr CDN version:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@0.2.1/responsive-scale.js"
   data-design-width="1920"
 ></script>
 ```
@@ -47,7 +47,7 @@ Use `@main` only for testing the latest development version:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@main/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@main/responsive-scale.js"
   data-design-width="1920"
 ></script>
 ```
@@ -113,7 +113,7 @@ Use the same HTML and recompose it in CSS below the breakpoint. Both layout widt
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@0.2.1/responsive-scale.js"
   data-design-width="1920"
   data-mobile-design-width="500"
   data-mobile-breakpoint="500"
@@ -139,7 +139,7 @@ Use the width the site was designed for:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@0.2.1/responsive-scale.js"
   data-design-width="1440"
 ></script>
 ```
@@ -148,7 +148,7 @@ Available script attributes:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@0.2.1/responsive-scale.js"
   data-design-width="1920"
   data-mobile-design-width="500"
   data-mobile-breakpoint="500"

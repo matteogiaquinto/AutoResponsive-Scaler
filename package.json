@@ -1,6 +1,6 @@
 {
   "name": "autoresponsive-scaler",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Make your website responsive with one script instead of redesigning every breakpoint.",
   "main": "responsive-scale.js",
   "browser": "responsive-scale.js",
@@ -26,11 +26,11 @@
   "author": "Matteo Giaquinto",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Saveyh/AutoResponsive-Scaler.git"
+    "url": "git+https://github.com/matteogiaquinto/AutoResponsive-Scaler.git"
   },
   "bugs": {
-    "url": "https://github.com/Saveyh/AutoResponsive-Scaler/issues"
+    "url": "https://github.com/matteogiaquinto/AutoResponsive-Scaler/issues"
   },
-  "homepage": "https://Saveyh.github.io/AutoResponsive-Scaler/",
+  "homepage": "https://matteogiaquinto.github.io/AutoResponsive-Scaler/",
   "license": "MIT"
 }

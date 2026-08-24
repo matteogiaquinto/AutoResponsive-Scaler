@@ -88,7 +88,7 @@ Before releasing:
 9. Verify the tagged jsDelivr URL:
 
    ```txt
-   https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@VERSION/responsive-scale.js
+   https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@VERSION/responsive-scale.js
    ```
 
 Use tagged CDN URLs for production documentation. `@main` is acceptable only as a latest-development option.
@@ -140,7 +140,7 @@ Check that there is no horizontal overflow and that the body height follows the 
 jsDelivr versioned URLs depend on Git tags. For example, this URL only works if the `0.1.0` tag exists:
 
 ```txt
-https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.1.0/responsive-scale.js
+https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@0.1.0/responsive-scale.js
 ```
 
 Do not document a versioned CDN URL before the matching tag exists and has been verified.

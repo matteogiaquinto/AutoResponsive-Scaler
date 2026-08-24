@@ -4,7 +4,7 @@ Make fixed, art-directed layouts scale fluidly without recreating every intermed
 
 Best for desktop-first pages that preserve a precise composition. Version 0.2 can also switch to a separately designed mobile composition, then scale that layout below its breakpoint.
 
-> Status: `0.2.0` experimental. This is an intentional shortcut, not a universal responsive-design replacement.
+> Status: `0.2.1` experimental. This is an intentional shortcut, not a universal responsive-design replacement.
 
 ## Quick Start
 
@@ -12,7 +12,7 @@ Load the stable release in the `<head>`:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/Saveyh/AutoResponsive-Scaler@0.2.0/responsive-scale.js"
+  src="https://cdn.jsdelivr.net/gh/matteogiaquinto/AutoResponsive-Scaler@0.2.1/responsive-scale.js"
   data-design-width="1920"
 ></script>
 ```
@@ -34,7 +34,7 @@ Wrap the page content and build it at the design width:
 
 The script applies the scale, prevents horizontal overflow, and corrects the document height after the transform.
 
-For an AI-assisted installation, use [the installation context](docs/ai-install-prompt.md). For development against the latest source, replace `@0.2.0` with `@main`.
+For an AI-assisted installation, use [the installation context](docs/ai-install-prompt.md). For development against the latest source, replace `@0.2.1` with `@main`.
 
 ## Desktop And Mobile Layouts
 
